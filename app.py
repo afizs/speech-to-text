@@ -32,9 +32,7 @@ def hello(audio_url, speaker_labeling):
     return res.get('id')
 
 def get_status(transcription_id):
-    print('--->', transcription_id)
     endpoint_status = f"https://api.assemblyai.com/v2/transcript/{transcription_id}"
-    print('--->', endpoint_status)
     res = requests.get(endpoint_status, headers=headers)
     list_of_transcriptions['entries'][transcription_id] = res.json().get('status')
     with open('transcriptions.json', 'w') as f:
@@ -46,13 +44,6 @@ def get_results(transcription_id):
     endpoint_result = f"https://api.assemblyai.com/v2/transcript/{transcription_id}"
     res = requests.get(endpoint_result, headers=headers)
     return res.json().get('text')
-
-def refresh_list():
-    results = '''Transaction ID \t\t\t\t Status\n'''
-    for entry, status in list_of_transcriptions['entries'].items():
-        results += f'{entry} {status}'
-
-    return list_of_transcriptions['entries'].items()
 
 import gradio as gr 
 
@@ -85,9 +76,7 @@ with demo:
     text_button.click(hello, inputs=[text_input, speaker_choice], outputs=output)
     status_button.click(get_status, inputs=transcription_id_status, outputs=status)
     results_button.click(get_results, inputs=[transcription_id], outputs=results)
-    # refresh_button.click(refresh_list, inputs = None, outputs=None)
-# iface = gr.Interface(fn=hello, inputs=['text', 'checkbox'], outputs=['text'])
-
+    
 if __name__ == "__main__":
     # iface.launch(server_port=7860, debug=True)
     demo.launch(server_port=7860, debug=True)
